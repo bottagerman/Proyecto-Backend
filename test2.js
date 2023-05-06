@@ -5,17 +5,17 @@ class ProductManager{
    constructor(path){
       this.products=[];
       this.#path = path;
-      if(fs.existsSync(this.#path))
+      if(!fs.existsSync(this.#path))
       return fs.writeFileSync(this.#path, "[]")
    }
 
    getProducts(){
-      this.products = JSON.parse(fs.writeFileSync(this.#path, "utf-8"))
+      this.products = JSON.parse(fs.readFileSync(this.#path, "utf-8"))
       console.log(this.products)
       return this.products
    }
    getProductById(id){
-      this.products = JSON.parse(fs.writeFileSync(this.#path, "utf-8"))
+      this.products = JSON.parse(fs.readFileSync(this.#path, "utf-8"))
 
       const productFound = this.products.find(p => p.id === id)
       if(productFound){
@@ -26,7 +26,7 @@ class ProductManager{
       }
    }
    #getProductByCode(code){
-      this.products = JSON.parse(fs.writeFileSync(this.#path, "utf-8"));
+      this.products = JSON.parse(fs.readFileSync(this.#path, "utf-8"));
       const existInArray = this.products.find (p => p.code === code)
       if(existInArray){
          return true; 
@@ -36,7 +36,7 @@ class ProductManager{
    }
 
    #generateId(){ 
-      this.products = JSON.parse(fs.writeFileSync(this.#path, "utf-8"))
+      this.products = JSON.parse(fs.readFileSync(this.#path, "utf-8"))
       let newId = 0;
       for (let i = 0; i < this.products.length; i++) {
          const prod = this.products[i];
@@ -44,11 +44,13 @@ class ProductManager{
             newId = prod.id
          }        
       } 
-      return newId ++ 
+      return ++newId;
    }
 
    addProduct (title, description, price, thumbnail, stock, code ){
       
+      this.products = JSON.parse(fs.readFileSync(this.#path, "utf-8"))
+
       if(!title || !description || !price || !thumbnail || !stock || !code || this.#getProductByCode(code) ){
          return console.log("ERROR!, you can't left a field without complete or repeat the code, please try again");
       }else{
@@ -58,8 +60,8 @@ class ProductManager{
       }
    }
 
-   deleteProduct(){
-      this.products = JSON.parse(fs.writeFileSync(this.#path, "utf-8"))
+   deleteProduct(id){
+      this.products = JSON.parse(fs.readFileSync(this.#path, "utf-8"))
       if(this.products.find (p => p.id === id)){
          this.products.splice (this.products.indexOf(this.products.find(p => p.id === id)), 1)
          fs.writeFileSync(this.#path, JSON.stringify(this.products))
@@ -84,3 +86,12 @@ class ProductManager{
 }
 
 const product = new ProductManager("./products.json")
+
+product.getProducts()
+product.deleteProduct()
+product.addProduct("camiseta de river", "camiseta de river 2023", 20000, "no image", 23, 220)
+
+
+
+
+console.log(product)
